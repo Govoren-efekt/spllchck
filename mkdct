@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# vim bg.txt --> add new words
+
+cp ./bg.txt ./bg.txt.bak
+iconv -f utf8 -t ISO88595 ./bg.txt -o ./import.txt
+# shellcheck disable=SC2024
+sudo aspell --lang=zz create master /usr/lib/aspell/zz.rws <./import.txt
