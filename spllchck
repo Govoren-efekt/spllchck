@@ -1,9 +1,18 @@
 #!/bin/bash
 
 for i in *.txt; do
+    aspell --lang=zz list --dont-suggest <"${i}" | sort | uniq >> ./tmp
+done
+vim ./tmp
+echo "personal_ws-1.1 zz $( wc -l ./tmp|cut -d' ' -f1)" | cat - tmp > temp && mv temp tmp
+iconv -f utf8 -t ISO88595 ./tmp -o ./dict
+rm ./tmp
+
+for i in *.txt; do
   words=$(wc -w "${i}" | cut -d' ' -f1)
-  readarray -t errors < <(aspell --lang=zz list --dont-suggest <"${i}" | sort -u)
+  readarray -t errors < <(aspell --home-dir=. --personal=dict --lang=zz list --dont-suggest <"${i}" | sort -u)
   percentage=$(((6 - ${#errors[@]} * 100 / words)))
   printf "\n====\n%s %s/%s - %s\n" "${i}" "${words}" "${#errors[@]}" "${percentage}"
   printf "%s\n" "${errors[@]}"
 done >spellreview
+rm ./dict
